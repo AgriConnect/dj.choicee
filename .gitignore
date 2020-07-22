@@ -4,5 +4,6 @@
 /dist/
 /src/dj.choices.egg-info/
 *.pyc
+__pycache__
 .python-version
 .vscode
