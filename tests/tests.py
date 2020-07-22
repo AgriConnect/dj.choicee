@@ -25,8 +25,6 @@
 
 from django.test import TestCase
 
-import six
-
 
 class SimpleTest(TestCase):
     def test_dummy(self):
@@ -45,13 +43,13 @@ class SimpleTest(TestCase):
             black = _("Black")
 
         self.assertEqual(Colors(), [(1, "White"), (2, "Yellow"), (3, "Red"),
-                (4, "Green"), (5, "Black")])
+                         (4, "Green"), (5, "Black")])
         self.assertTrue(isinstance(Colors.white, Choices.Choice))
         self.assertTrue(isinstance(Colors.white, int))
         self.assertEqual(Colors.white, 1)
         self.assertEqual(Colors.white.id, 1)
         self.assertEqual(Colors.white.desc, "White")
-        self.assertEqual(six.text_type(Colors.white), "White")
+        self.assertEqual(str(Colors.white), "White")
         self.assertEqual(Colors.white.name, "white")
         self.assertEqual(Colors.from_id(1), Colors.white)
         self.assertEqual(Colors.name_from_id(1), Colors.white.name)
@@ -66,7 +64,7 @@ class SimpleTest(TestCase):
         self.assertEqual(Colors.yellow, 2)
         self.assertEqual(Colors.yellow.id, 2)
         self.assertEqual(Colors.yellow.desc, "Yellow")
-        self.assertEqual(six.text_type(Colors.yellow), "Yellow")
+        self.assertEqual(str(Colors.yellow), "Yellow")
         self.assertEqual(Colors.yellow.name, "yellow")
         self.assertEqual(Colors.from_id(2), Colors.yellow)
         self.assertEqual(Colors.name_from_id(2), Colors.yellow.name)
@@ -81,7 +79,7 @@ class SimpleTest(TestCase):
         self.assertEqual(Colors.red, 3)
         self.assertEqual(Colors.red.id, 3)
         self.assertEqual(Colors.red.desc, "Red")
-        self.assertEqual(six.text_type(Colors.red), "Red")
+        self.assertEqual(str(Colors.red), "Red")
         self.assertEqual(Colors.red.name, "red")
         self.assertEqual(Colors.from_id(3), Colors.red)
         self.assertEqual(Colors.name_from_id(3), Colors.red.name)
@@ -96,7 +94,7 @@ class SimpleTest(TestCase):
         self.assertEqual(Colors.green, 4)
         self.assertEqual(Colors.green.id, 4)
         self.assertEqual(Colors.green.desc, "Green")
-        self.assertEqual(six.text_type(Colors.green), "Green")
+        self.assertEqual(str(Colors.green), "Green")
         self.assertEqual(Colors.green.name, "green")
         self.assertEqual(Colors.from_id(4), Colors.green)
         self.assertEqual(Colors.name_from_id(4), Colors.green.name)
@@ -111,7 +109,7 @@ class SimpleTest(TestCase):
         self.assertEqual(Colors.black, 5)
         self.assertEqual(Colors.black.id, 5)
         self.assertEqual(Colors.black.desc, "Black")
-        self.assertEqual(six.text_type(Colors.black), "Black")
+        self.assertEqual(str(Colors.black), "Black")
         self.assertEqual(Colors.black.name, "black")
         self.assertEqual(Colors.from_id(5), Colors.black)
         self.assertEqual(Colors.name_from_id(5), Colors.black.name)
@@ -143,10 +141,11 @@ class SimpleTest(TestCase):
             entry8 = _("entry8")
             entry9 = _("entry9")
 
-        self.assertEqual(Groupies(), [(1, six.text_type('entry1')), (2, six.text_type('entry2')),
-                (3, six.text_type('entry3')), (11, six.text_type('entry4')), (12, six.text_type('entry5')),
-                (13, six.text_type('entry6')), (21, six.text_type('entry7')), (22, six.text_type('entry8')),
-                (23, six.text_type('entry9'))])
+        self.assertEqual(Groupies(),
+                         [(1, str('entry1')), (2, str('entry2')),
+                          (3, str('entry3')), (11, str('entry4')), (12, str('entry5')),
+                          (13, str('entry6')), (21, str('entry7')), (22, str('entry8')),
+                          (23, str('entry9'))])
         self.assertEqual(Groupies.entry1.group, Groupies.GROUP1)
         self.assertEqual(Groupies.entry2.group, Groupies.GROUP1)
         self.assertEqual(Groupies.entry3.group, Groupies.GROUP1)
@@ -156,12 +155,12 @@ class SimpleTest(TestCase):
         self.assertEqual(Groupies.entry7.group, Groupies.GROUP3)
         self.assertEqual(Groupies.entry8.group, Groupies.GROUP3)
         self.assertEqual(Groupies.entry9.group, Groupies.GROUP3)
-        self.assertEqual(Groupies.GROUP1.choices, [Groupies.entry1,
-                Groupies.entry2, Groupies.entry3])
-        self.assertEqual(Groupies.GROUP2.choices, [Groupies.entry4,
-                Groupies.entry5, Groupies.entry6])
-        self.assertEqual(Groupies.GROUP3.choices, [Groupies.entry7,
-                Groupies.entry8, Groupies.entry9])
+        self.assertEqual(Groupies.GROUP1.choices,
+                         [Groupies.entry1, Groupies.entry2, Groupies.entry3])
+        self.assertEqual(Groupies.GROUP2.choices,
+                         [Groupies.entry4, Groupies.entry5, Groupies.entry6])
+        self.assertEqual(Groupies.GROUP3.choices,
+                         [Groupies.entry7, Groupies.entry8, Groupies.entry9])
 
     def test_choices_validation(self):
         from dj.choices import Choices
@@ -173,15 +172,15 @@ class SimpleTest(TestCase):
             NoChoice()
             self.fail("ValueError not raised.")
         except ValueError as e:
-            self.assertEqual(str(e), "Choices class declared with no actual "
-                    "choice fields.")
+            self.assertEqual(str(e),
+                             "Choices class declared with no actual choice fields.")
 
     def test_choices_filter(self):
         from dj.choices import Country
 
         self.assertEqual(len(Country()), 235)
-        self.assertEqual(Country(filter=("pl", "gb", "de")), [(73, six.text_type('Germany')),
-            (153, six.text_type('Poland')), (202, six.text_type('United Kingdom'))])
+        self.assertEqual(Country(filter=("pl", "gb", "de")),
+                         [(73, str('Germany')), (153, str('Poland')), (202, str('United Kingdom'))])
 
     def test_shifted_basic(self):
         from dj.choices import Choices
@@ -223,8 +222,7 @@ class SimpleTest(TestCase):
         self.assertEqual(Colors.toxic_waste_green.comment, 'Yuk!')
 
     def test_choicefield(self):
-        from app.models import Favourites, Color,\
-                MusicGenre, Sports
+        from app.models import Favourites, Color, MusicGenre, Sports
         judy = Favourites.create(name='Judy')
         self.assertEqual(judy.color, Color.green)
         self.assertEqual(judy.music, MusicGenre.banjo)
@@ -258,8 +256,7 @@ class SimpleTest(TestCase):
         self.assertEqual(tom2.get_sport_display(), 'Mountaineering')
 
     def test_form_with_choicefields(self):
-        from app.models import Favourites, Color,\
-                MusicGenre, Sports
+        from app.models import Favourites, Color, MusicGenre, Sports
         from app.forms import FavouritesForm
         empty_form = FavouritesForm()
         self.assertFalse(empty_form.is_valid())
@@ -268,18 +265,19 @@ class SimpleTest(TestCase):
         self.assertEqual(empty_form._bound_value('sport'), None)
         self.assertEqual(empty_form._bound_value('name'), None)
         self.assertEqual(empty_form._bound_value('nullable'), None)
-        empty_form_data = FavouritesForm(data={
-                'color': 1, 'music': 2, 'sport': 3, 'name': 'Richard'})
+        empty_form_data = FavouritesForm(
+            data={'color': 1, 'music': 2, 'sport': 3, 'name': 'Richard'}
+        )
         self.assertTrue(empty_form_data.is_valid())
         self.assertEqual(empty_form_data._bound_value('color'), Color.red.id)
         self.assertEqual(empty_form_data._bound_value('music'),
-                MusicGenre.country.id)
+                         MusicGenre.country.id)
         self.assertEqual(empty_form_data._bound_value('sport'), Sports.baseball.id)
         self.assertEqual(empty_form_data._bound_value('name'), 'Richard')
         self.assertEqual(empty_form_data._bound_value('nullable'), None)
         judy = Favourites.create(name='Judy')
         judy_form = FavouritesForm(instance=judy)
-        self.assertFalse(judy_form.is_valid()) # because it's not bound
+        self.assertFalse(judy_form.is_valid())  # because it's not bound
         self.assertEqual(judy_form._bound_value('color'), Color.green.id)
         self.assertEqual(judy_form._bound_value('music'), MusicGenre.banjo.id)
         self.assertEqual(judy_form._bound_value('sport'), Sports.poker.id)
@@ -295,19 +293,20 @@ class SimpleTest(TestCase):
         self.assertEqual(judy_form_data._bound_value('name'), 'Judy')
         self.assertEqual(judy_form_data._bound_value('nullable'), Color.red.id)
         invalid_data_for_form = dict(judy_form.initial)
-        invalid_data_for_form.update({'color': -1, 'music': '', 'sport': None,
-                'nullable': ''})
-        judy_form_invalid_data = FavouritesForm(instance=judy,
-                data=invalid_data_for_form)
+        invalid_data_for_form.update({'color': -1, 'music': '', 'sport': None, 'nullable': ''})
+        judy_form_invalid_data = FavouritesForm(
+            instance=judy,
+            data=invalid_data_for_form
+        )
         self.assertFalse(judy_form_invalid_data.is_valid())
         self.assertEqual(set(judy_form_invalid_data.errors.keys()),
-                set(['color', 'music', 'sport']))
+                         set(['color', 'music', 'sport']))
         self.assertTrue('not a valid choice' in
-                judy_form_invalid_data.errors['color'][0])
+                        judy_form_invalid_data.errors['color'][0])
         self.assertTrue('cannot be null' in
-                judy_form_invalid_data.errors['music'][0])
+                        judy_form_invalid_data.errors['music'][0])
         self.assertTrue('cannot be null' in
-                judy_form_invalid_data.errors['sport'][0])
+                        judy_form_invalid_data.errors['sport'][0])
 
     def test_regularintegers(self):
         from app.models import Color, RegularIntegers
@@ -317,16 +316,16 @@ class SimpleTest(TestCase):
         rint_invalid = RegularIntegers.create(color=-1)
         self.assertEqual(rint_invalid.color, -1)
         empty_form = RegularIntegersForm()
-        self.assertFalse(empty_form.is_valid()) # because it's not bound
+        self.assertFalse(empty_form.is_valid())  # because it's not bound
         valid_form = RegularIntegersForm(data={'color': 1})
         self.assertTrue(valid_form.is_valid())
         invalid_form = RegularIntegersForm(data={'color': -1})
         self.assertFalse(invalid_form.is_valid())
         self.assertTrue('color' in invalid_form.errors)
         self.assertTrue('Select a valid choice' in
-                invalid_form.errors['color'][0])
+                        invalid_form.errors['color'][0])
         invalid_type_form = RegularIntegersForm(data={'color': 'aaa'})
         self.assertFalse(invalid_type_form.is_valid())
         self.assertTrue('color' in invalid_type_form.errors)
         self.assertTrue('Select a valid choice' in
-                invalid_type_form.errors['color'][0])
+                        invalid_type_form.errors['color'][0])
