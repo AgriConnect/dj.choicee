@@ -142,10 +142,10 @@ class SimpleTest(TestCase):
             entry9 = _("entry9")
 
         self.assertEqual(Groupies(),
-                         [(1, str('entry1')), (2, str('entry2')),
-                          (3, str('entry3')), (11, str('entry4')), (12, str('entry5')),
-                          (13, str('entry6')), (21, str('entry7')), (22, str('entry8')),
-                          (23, str('entry9'))])
+                         [(1, 'entry1'), (2, 'entry2'),
+                          (3, 'entry3'), (11, 'entry4'), (12, 'entry5'),
+                          (13, 'entry6'), (21, 'entry7'), (22, 'entry8'),
+                          (23, 'entry9')])
         self.assertEqual(Groupies.entry1.group, Groupies.GROUP1)
         self.assertEqual(Groupies.entry2.group, Groupies.GROUP1)
         self.assertEqual(Groupies.entry3.group, Groupies.GROUP1)
@@ -176,11 +176,11 @@ class SimpleTest(TestCase):
                              "Choices class declared with no actual choice fields.")
 
     def test_choices_filter(self):
-        from dj.choices import Country
+        from dj.choices.more import Country
 
         self.assertEqual(len(Country()), 235)
         self.assertEqual(Country(filter=("pl", "gb", "de")),
-                         [(73, str('Germany')), (153, str('Poland')), (202, str('United Kingdom'))])
+                         [(73, 'Germany'), (153, 'Poland'), (202, 'United Kingdom')])
 
     def test_shifted_basic(self):
         from dj.choices import Choices

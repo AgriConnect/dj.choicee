@@ -24,20 +24,16 @@ import math
 
 from django import forms
 from django.core import exceptions, validators
-from django.db import models
 from django.db.models.fields import IntegerField
 from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
-from dj.choices import unset, Choices, Gender
+from .core import unset, Choices
 
 
 class ChoiceField(IntegerField):
     description = _("Integer")
 
     def __init__(self, *args, **kwargs):
-        if kwargs.get('_in_south'):  # workaround for South removing `choices`
-            kwargs['choices'] = Gender
-            del kwargs['_in_south']
         if 'choices' not in kwargs or not isinstance(kwargs['choices'], type):
             raise exceptions.ImproperlyConfigured("No choices class specified.")
         else:
@@ -57,10 +53,8 @@ class ChoiceField(IntegerField):
         )
         if isinstance(kwargs.get('default'), Choices.Choice):
             kwargs['default'] = self.item_getter(kwargs['default'])[0]
-        for arg in 'filter', 'grouped', 'item':
-            if arg in kwargs:
-                del kwargs[arg]
-        super().__init__(*args, **kwargs)
+        nkwargs = {k: kwargs[k] for k in kwargs if k not in ('filter', 'grouped', 'item')}
+        super().__init__(*args, **nkwargs)
 
     def to_python(self, value):
         value = super().to_python(self.get_prep_value(value))
@@ -98,7 +92,7 @@ class ChoiceField(IntegerField):
         elif lookup_type in ('in', 'range'):
             value = [self.get_prep_value(v) for v in value]
         elif lookup_type != 'isnull':
-            raise TypeError('Invalid lookup_type: %r' % lookup_type)
+            raise TypeError('Invalid lookup_type: {!r}'.format(lookup_type))
         return super().get_prep_lookup(lookup_type, value)
 
     def validate(self, value, model_instance):
@@ -125,31 +119,18 @@ class ChoiceField(IntegerField):
             # Many of the subclass-specific formfield arguments (min_value,
             # max_value) don't apply for choice fields, so be sure to only pass
             # the values that TypedChoiceField will understand.
-            for k in kwargs.keys():
-                if k not in ('coerce', 'empty_value', 'choices', 'required',
-                             'widget', 'label', 'initial', 'help_text',
-                             'error_messages', 'show_hidden_initial'):
-                    del kwargs[k]
-        defaults.update(kwargs)
+            unneeded = ('coerce', 'empty_value', 'choices', 'required',
+                        'widget', 'label', 'initial', 'help_text',
+                        'error_messages', 'show_hidden_initial')
+            nkwargs = {k: kwargs[k] for k in kwargs if k not in unneeded}
+        else:
+            nkwargs = kwargs
+        defaults.update(nkwargs)
         return form_class(**defaults)
 
     def value_to_string(self, obj):
         value = self._get_val_from_obj(obj)
         return self.get_db_prep_value(value)
-
-    def south_field_triple(self):
-        kwargs = dict(
-            null=repr(self.null),
-            blank=repr(self.blank),
-            db_column=repr(self.db_column),
-            db_index=repr(self.db_index),
-            primary_key=repr(self.primary_key),
-            unique=repr(self.unique),
-            _in_south=repr(True),
-        )
-        if self.default is not models.NOT_PROVIDED:
-            kwargs['default'] = repr(self.default)
-        return ('dj.choices.fields.ChoiceField', [], kwargs)
 
     def deconstruct(self):
         # Django 1.7 migrations
