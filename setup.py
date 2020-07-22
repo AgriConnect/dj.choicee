@@ -46,7 +46,6 @@ setup(
     namespace_packages=['dj'],
     install_requires=[
         'django',
-        'six',
     ],
 
     classifiers=[
