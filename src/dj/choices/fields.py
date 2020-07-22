@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
 # Copyright (C) 2012-2013 by Łukasz Langa
 #
@@ -21,11 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import math
 
 from django import forms
@@ -33,24 +27,15 @@ from django.core import exceptions, validators
 from django.db import models
 from django.db.models.fields import IntegerField
 from django.utils.text import capfirst
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from dj.choices import unset, Choices, Gender
 
-import six
 
-try:
-    # Removed in Django 1.10 (replaced by `from_db_value` method)
-    from django.db.models import SubfieldBase
-except ImportError:
-    class SubfieldBase(type):
-        pass
-
-
-class ChoiceField(six.with_metaclass(SubfieldBase, IntegerField)):
+class ChoiceField(IntegerField):
     description = _("Integer")
 
     def __init__(self, *args, **kwargs):
-        if kwargs.get('_in_south'): # workaround for South removing `choices`
+        if kwargs.get('_in_south'):  # workaround for South removing `choices`
             kwargs['choices'] = Gender
             del kwargs['_in_south']
         if 'choices' not in kwargs or not isinstance(kwargs['choices'], type):
@@ -60,22 +45,25 @@ class ChoiceField(six.with_metaclass(SubfieldBase, IntegerField)):
                 if not issubclass(kwargs['choices'], Choices):
                     raise TypeError()
             except TypeError:
-                raise exceptions.ImproperlyConfigured("dj.choices class "
-                        "required as `choices` argument.")
+                raise exceptions.ImproperlyConfigured(
+                    "dj.choices class required as `choices` argument."
+                )
         self.choice_class = kwargs['choices']
         self.item_getter = kwargs.get('item', lambda x: (x.id,))
-        kwargs['choices'] = self.choice_class(item=kwargs.get('item', unset),
-            filter=kwargs.get('filter', (unset,)), grouped=kwargs.get('grouped',
-                False))
+        kwargs['choices'] = self.choice_class(
+            item=kwargs.get('item', unset),
+            filter=kwargs.get('filter', (unset,)),
+            grouped=kwargs.get('grouped', False)
+        )
         if isinstance(kwargs.get('default'), Choices.Choice):
             kwargs['default'] = self.item_getter(kwargs['default'])[0]
         for arg in 'filter', 'grouped', 'item':
             if arg in kwargs:
                 del kwargs[arg]
-        super(ChoiceField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def to_python(self, value):
-        value = super(ChoiceField, self).to_python(self.get_prep_value(value))
+        value = super().to_python(self.get_prep_value(value))
         if value is None:
             return value
         try:
@@ -85,8 +73,8 @@ class ChoiceField(six.with_metaclass(SubfieldBase, IntegerField)):
                 self.error_messages['invalid_choice'] % {'value': value}
             )
 
-    def from_db_value(self, value, expression, connection, context):
-        # Added in Django 1.8. Replaced SubfieldBase
+    def from_db_value(self, value, expression, connection, context=None):
+        # "context" is removed in Django 3.0
         if value is None:
             return value
         return self.choice_class.from_id(value)
@@ -97,10 +85,8 @@ class ChoiceField(six.with_metaclass(SubfieldBase, IntegerField)):
     def get_prep_value(self, value):
         if value in validators.EMPTY_VALUES:
             return None
-        if isinstance(value, (six.text_type, int)):
+        if isinstance(value, (str, int)):
             return int(value)
-        if isinstance(value, long):
-            return value
         return self.item_getter(value)[0]
 
     def get_prep_lookup(self, lookup_type, value):
@@ -113,11 +99,10 @@ class ChoiceField(six.with_metaclass(SubfieldBase, IntegerField)):
             value = [self.get_prep_value(v) for v in value]
         elif lookup_type != 'isnull':
             raise TypeError('Invalid lookup_type: %r' % lookup_type)
-        return super(ChoiceField, self).get_prep_lookup(lookup_type, value)
+        return super().get_prep_lookup(lookup_type, value)
 
     def validate(self, value, model_instance):
-        return super(ChoiceField, self).validate(self.get_prep_value(value),
-                model_instance)
+        return super().validate(self.get_prep_value(value), model_instance)
 
     def formfield(self, form_class=forms.CharField, **kwargs):
         """Has to be defined as a whole without doing super() because of
@@ -133,10 +118,10 @@ class ChoiceField(six.with_metaclass(SubfieldBase, IntegerField)):
             # Fields with choices get special treatment.
             include_blank = self.blank or not (self.has_default() or 'initial' in kwargs)
             defaults['choices'] = self.get_choices(include_blank=include_blank)
-            defaults['coerce'] = self.from_python # XXX: changed
+            defaults['coerce'] = self.from_python  # XXX: changed
             if self.null:
                 defaults['empty_value'] = None
-            form_class = _TypedChoiceField # XXX: changed
+            form_class = _TypedChoiceField  # XXX: changed
             # Many of the subclass-specific formfield arguments (min_value,
             # max_value) don't apply for choice fields, so be sure to only pass
             # the values that TypedChoiceField will understand.
@@ -168,7 +153,7 @@ class ChoiceField(six.with_metaclass(SubfieldBase, IntegerField)):
 
     def deconstruct(self):
         # Django 1.7 migrations
-        name, path, args, kwargs = super(ChoiceField, self).deconstruct()
+        name, path, args, kwargs = super().deconstruct()
         kwargs['choices'] = self.choice_class
         return name, path, args, kwargs
 

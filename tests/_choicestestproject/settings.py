@@ -9,7 +9,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.sqlite3',
         'NAME': ':memory:',                     # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
@@ -72,7 +72,6 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -82,7 +81,6 @@ SECRET_KEY = 'dqro09o2k7eha5px#h_t75ji)qmz3va)tdk!91tn7-%f99=qj&'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -93,7 +91,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = '_choicestestproject.urls'
+ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -108,7 +106,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'dj._choicestestproject.app',
+    'app',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -145,4 +143,3 @@ import dj.choices
 
 BASE_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
 TEST_DISCOVERY_ROOT = os.path.realpath(os.path.dirname(dj.choices.__file__))
-TEST_RUNNER = "dj._choicestestproject.DiscoveryDjangoTestSuiteRunner"

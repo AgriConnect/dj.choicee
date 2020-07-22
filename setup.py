@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
 # Copyright (C) 2010-2013 by Łukasz Langa
 #
@@ -21,47 +20,45 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import os
+from pathlib import Path
 from setuptools import setup, find_packages
 
-with open(os.path.join(os.path.dirname(__file__), 'README.rst'), 'rb') as ldf:
-    long_description = ldf.read().decode('utf8')
+long_description = (Path(__file__).parent / 'README.rst').read_text()
 
 # We let it die a horrible tracebacking death if reading the file fails.
 # We couldn't sensibly recover anyway: we need the long description.
 
-setup (
-    name = 'dj.choices',
-    version = '0.11.0',
-    author = '\xc5\x81ukasz Langa',
-    author_email = 'lukasz@langa.pl',
-    description = "An enum implementation for Django forms and models.",
-    long_description = long_description,
-    url = 'https://github.com/ambv/dj.choices/',
-    keywords = 'django dj extra contrib choices enum enumeration',
-    platforms = ['any'],
-    license = 'MIT',
-    package_dir = {'': 'src'},
-    packages = find_packages('src'),
-    include_package_data = True,
-    zip_safe = False, # if only because of the readme file
-    namespace_packages = ['dj'],
-    install_requires = [
+setup(
+    name='dj.choices',
+    version='1.0.0',
+    author='\xc5\x81ukasz Langa',
+    author_email='lukasz@langa.pl',
+    description="An enum implementation for Django forms and models.",
+    long_description=long_description,
+    url='https://github.com/ambv/dj.choices/',
+    keywords='django dj extra contrib choices enum enumeration',
+    platforms=['any'],
+    license='MIT',
+    package_dir={'': 'src'},
+    packages=find_packages('src'),
+    include_package_data=True,
+    zip_safe=False,  # if only because of the readme file
+    namespace_packages=['dj'],
+    install_requires=[
         'django',
         'six',
     ],
 
-    classifiers = [
+    classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Framework :: Django',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Libraries :: Python Modules',

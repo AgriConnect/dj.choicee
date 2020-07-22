@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # Copyright (C) 2012-2013 by Łukasz Langa
@@ -21,12 +21,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
-from dj._choicestestproject.app.models import Favourites, RegularIntegers
+from app.models import Favourites, RegularIntegers
 from django import forms
 from django.forms.forms import BoundField
 

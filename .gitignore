@@ -3,3 +3,6 @@
 /src/log/
 /dist/
 /src/dj.choices.egg-info/
+*.pyc
+.python-version
+.vscode

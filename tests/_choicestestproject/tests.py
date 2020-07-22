@@ -1,8 +1,7 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
 # Copyright (C) 2012-2013 by Łukasz Langa
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -23,11 +22,6 @@
 
 """Tests for choices."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 
 from django.test import TestCase
 
@@ -37,7 +31,6 @@ import six
 class SimpleTest(TestCase):
     def test_dummy(self):
         """Just see if the import works as expected."""
-        from dj import choices
 
     def test_choices_basic(self):
         from dj.choices import Choices
@@ -230,7 +223,7 @@ class SimpleTest(TestCase):
         self.assertEqual(Colors.toxic_waste_green.comment, 'Yuk!')
 
     def test_choicefield(self):
-        from dj._choicestestproject.app.models import Favourites, Color,\
+        from app.models import Favourites, Color,\
                 MusicGenre, Sports
         judy = Favourites.create(name='Judy')
         self.assertEqual(judy.color, Color.green)
@@ -265,9 +258,9 @@ class SimpleTest(TestCase):
         self.assertEqual(tom2.get_sport_display(), 'Mountaineering')
 
     def test_form_with_choicefields(self):
-        from dj._choicestestproject.app.models import Favourites, Color,\
+        from app.models import Favourites, Color,\
                 MusicGenre, Sports
-        from dj._choicestestproject.app.forms import FavouritesForm
+        from app.forms import FavouritesForm
         empty_form = FavouritesForm()
         self.assertFalse(empty_form.is_valid())
         self.assertEqual(empty_form._bound_value('color'), Color.green.id)
@@ -317,8 +310,8 @@ class SimpleTest(TestCase):
                 judy_form_invalid_data.errors['sport'][0])
 
     def test_regularintegers(self):
-        from dj._choicestestproject.app.models import Color, RegularIntegers
-        from dj._choicestestproject.app.forms import RegularIntegersForm
+        from app.models import Color, RegularIntegers
+        from app.forms import RegularIntegersForm
         rint = RegularIntegers.create()
         self.assertEqual(rint.color, Color.green.id)
         rint_invalid = RegularIntegers.create(color=-1)

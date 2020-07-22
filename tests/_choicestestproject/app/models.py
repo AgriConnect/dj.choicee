@@ -1,8 +1,7 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
 # Copyright (C) 2012-2013 by Łukasz Langa
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -20,11 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
 
 from django.db import models
 from dj.choices import Choices
@@ -71,8 +65,8 @@ class Sports(Choices):
 class Favourites(models.Model):
     name = models.CharField(max_length=100)
     color = ChoiceField(choices=Color, default=Color.green)
-    music = ChoiceField(choices=MusicGenre, filter=('rock', 'country',
-        'banjo'))
+    music = ChoiceField(choices=MusicGenre,
+                        filter=('rock', 'country', 'banjo'))
     sport = ChoiceField(choices=Sports, grouped=True)
     nullable = ChoiceField(choices=Color, default=None, null=True, blank=True)
 

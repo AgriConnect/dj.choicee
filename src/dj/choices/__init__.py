@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
 # Copyright (C) 2011-2013 by Łukasz Langa
 #
@@ -23,18 +22,12 @@
 
 """Choices - an enum implementation for Django forms and models."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 from functools import partial
 from textwrap import dedent
 
-import six
 
 unset = object()
-ugettext = unset
+gettext = unset
 no_id_given = -255
 
 
@@ -42,7 +35,7 @@ class ChoicesEntry(int):
     global_id = 0
 
     def __new__(cls, *args, **kwargs):
-        return  super(ChoicesEntry, cls).__new__(
+        return super(ChoicesEntry, cls).__new__(
             cls, kwargs[str('id')]
         )
 
@@ -57,11 +50,11 @@ class ChoicesEntry(int):
     def desc(self):
         if not self.raw:
             return self.raw
-        # ugettext obscured that way so you can use choices in settings.py
-        global ugettext
-        if ugettext is unset:
-            from django.utils.translation import ugettext
-        return ugettext(self.raw)
+        # gettext obscured that way so you can use choices in settings.py
+        global gettext
+        if gettext is unset:
+            from django.utils.translation import gettext
+        return gettext(self.raw)
 
     @property
     def id(self):
@@ -76,28 +69,20 @@ class ChoicesEntry(int):
         self.__name = value.strip('_') if value else value
         self.__raw_name = value
 
-    def __unicode__(self, raw=False):
-        """Always returns Unicode."""
+    def __str__(self):
         name = self.name
-        if raw:
-            name = "{!r}".format(name)
-            if name[0] in 'bru':
-                name = name[2:-1]
-            else:
-                name = name[1:-1]
         return "<{}: {} (id: {})>".format(self.__class__.__name__,
-            name, self.id)
-
-    def __str__(self, raw=False):
-        """Returns Unicode on Py3, bytes on Py2."""
-        result = self.__unicode__(raw=raw)
-        if six.PY2:
-            result = result.encode('utf8')
-        return result
+                                          name, self.id)
 
     def __repr__(self):
-        """Returns escaped Unicode on Py3, escaped bytes on Py2."""
-        return self.__str__(raw=True)
+        name = self.name
+        name = "{!r}".format(name)
+        if name[0] in 'bru':
+            name = name[2:-1]
+        else:
+            name = name[1:-1]
+        return "<{}: {} (id: {})>".format(self.__class__.__name__,
+                                          name, self.id)
 
     def extra(self, **other):
         """Enables adding custom attributes to choices at declaration time.
@@ -120,7 +105,7 @@ class ChoicesEntry(int):
             >>> Color.from_name(request.POST['color']).html
             '#00ff00'
         """
-        for key, value in six.iteritems(other):
+        for key, value in other.items():
             self.__extra__.append(key)
             setattr(self, key, value)
         return self
@@ -134,8 +119,7 @@ class ChoiceGroup(ChoicesEntry):
     """A group of choices."""
 
     def __new__(cls, *args, **kwargs):
-        return  super(ChoiceGroup, cls).__new__(cls, id=kwargs.get(str('id'),
-            args[0]))
+        return super().__new__(cls, id=kwargs.get(str('id'), args[0]))
 
     def __init__(self, id, description=''):
         super(ChoiceGroup, self).__init__(description, id=id)
@@ -146,21 +130,14 @@ class Choice(ChoicesEntry):
     """A single choice."""
 
     def __new__(cls, *args, **kwargs):
-        return  super(Choice, cls).__new__(cls, id=kwargs.get(str('id'),
-            no_id_given))
+        return super().__new__(cls, id=kwargs.get(str('id'), no_id_given))
 
     def __init__(self, description, id=no_id_given, name=None):
         super(Choice, self).__init__(description, id=id, name=name)
         self.group = None
 
-    def __unicode__(self):
-        return self.desc
-
     def __str__(self):
-        result = self.__unicode__()
-        if six.PY2:
-            result = result.encode('utf8')
-        return result
+        return self.desc
 
     def __repr__(self):
         rawval = self.raw
@@ -175,15 +152,13 @@ class Choice(ChoicesEntry):
         else:
             rawval = rawval[1:-1]
         result = "<{}: {} (id: {}, name: {})>".format(self.__class__.__name__,
-            rawval, self.id, name)
-        if six.PY2:
-            result = result.encode('utf8')
+                                                      rawval, self.id, name)
         return result
 
 
 def _getter(name, given, returns, found, getter):
     def impl(cls, id, found=lambda id, k, v: False,
-                        getter=lambda id, k, v: None, fallback=unset):
+             getter=lambda id, k, v: None, fallback=unset):
         """Unless `fallback` is set, raises ValueError if name not present."""
         for k, v in cls.__dict__.items():
             if isinstance(v, ChoicesEntry) and found(id, k, v):
@@ -194,10 +169,12 @@ def _getter(name, given, returns, found, getter):
             return fallback
     function = partial(impl, found=found, getter=getter)
     function.__name__ = name
-    function.__doc__ = ("Choices.{name}({given}, fallback=unset) -> {returns}"
+    function.__doc__ = (
+        "Choices.{name}({given}, fallback=unset) -> {returns}"
         "\n\nGiven the `{given}`, returns the `{returns}`. {impl_doc}"
         "".format(name=name, given=given, returns=returns,
-            impl_doc=impl.__doc__))
+                  impl_doc=impl.__doc__)
+    )
     return classmethod(function)
 
 
@@ -223,7 +200,7 @@ class _ChoicesMeta(type):
                 if choice.id == no_id_given:
                     last_choice_id += 1
                     c = Choice(choice.raw, id=last_choice_id,
-                        name=choice.name)
+                               name=choice.name)
                     d = dict(((k, getattr(choice, k)) for k in
                               choice.__extra__))
                     choice = c.extra(**d)
@@ -241,7 +218,7 @@ class _ChoicesMeta(type):
         return type.__new__(meta, classname, bases, classDict)
 
 
-class Choices(six.with_metaclass(_ChoicesMeta, list)):
+class Choices(list, metaclass=_ChoicesMeta):
     def __init__(self, filter=(unset,), item=unset, grouped=False):
         """Creates a list of pairs from the specified Choices class.
         By default, each pair consists of a numeric ID and the translated
@@ -257,14 +234,15 @@ class Choices(six.with_metaclass(_ChoicesMeta, list)):
             raise ValueError("Choices class declared with no actual "
                              "choice fields.")
         if item is unset:
-            item = lambda choice: (choice.id, choice.desc)
+            def item(choice):
+                return (choice.id, choice.desc)
         filter = set(filter)
         if grouped and self.__groups__:
             for group in self.__groups__:
                 group_choices = []
                 for choice in group.choices:
-                    if choice.name in filter or (unset in filter and
-                        isinstance(choice, Choice)):
+                    if (choice.name in filter
+                            or (unset in filter and isinstance(choice, Choice))):   # NOQA: W503
                         group_choices.append(item(choice))
                 if group_choices:
                     self.append((group.desc, tuple(group_choices)))
@@ -272,59 +250,75 @@ class Choices(six.with_metaclass(_ChoicesMeta, list)):
             if grouped:
                 import warnings
                 warnings.warn("Choices class called with grouped=True and no "
-                    "actual groups.")
+                              "actual groups.")
             for choice in self.__choices__:
-                if choice.name in filter or (unset in filter and
-                    isinstance(choice, Choice)):
+                if (choice.name in filter
+                        or (unset in filter and isinstance(choice, Choice))):  # NOQA: W503
                     self.append(item(choice))
 
-    from_name = _getter("from_name",
+    from_name = _getter(
+        "from_name",
         given="name",
         returns="choice object",
         found=lambda id, k, v: k == id,
-        getter=lambda id, k, v: v)
+        getter=lambda id, k, v: v
+    )
 
-    id_from_name = _getter("id_from_name",
+    id_from_name = _getter(
+        "id_from_name",
         given="name",
         returns="id",
         found=lambda id, k, v: k == id,
-        getter=lambda id, k, v: v.id)
+        getter=lambda id, k, v: v.id
+    )
 
-    desc_from_name = _getter("desc_from_name",
+    desc_from_name = _getter(
+        "desc_from_name",
         given="name",
         returns="localized description string",
         found=lambda id, k, v: k == id,
-        getter=lambda id, k, v: v.desc)
+        getter=lambda id, k, v: v.desc
+    )
 
-    raw_from_name = _getter("raw_from_name",
+    raw_from_name = _getter(
+        "raw_from_name",
         given="name",
         returns="raw description string",
         found=lambda id, k, v: k == id,
-        getter=lambda id, k, v: v.raw)
+        getter=lambda id, k, v: v.raw
+    )
 
-    from_id = _getter("from_id",
+    from_id = _getter(
+        "from_id",
         given="id",
         returns="choice object",
         found=lambda id, k, v: v.id == id,
-        getter=lambda id, k, v: v)
+        getter=lambda id, k, v: v
+    )
 
-    name_from_id = _getter("name_from_id",
+    name_from_id = _getter(
+        "name_from_id",
         given="id",
         returns="attribute name",
         found=lambda id, k, v: v.id == id,
-        getter=lambda id, k, v: k)
+        getter=lambda id, k, v: k
+    )
 
-    desc_from_id = _getter("desc_from_id",
+    desc_from_id = _getter(
+        "desc_from_id",
         given="id",
         returns="localized description string",
         found=lambda id, k, v: v.id == id,
-        getter=lambda id, k, v: v.desc)
+        getter=lambda id, k, v: v.desc
+    )
 
-    raw_from_id = _getter("raw_from_id",
+    raw_from_id = _getter(
+        "raw_from_id",
         given="id",
         returns="raw description string",
         found=lambda id, k, v: v.id == id,
-        getter=lambda id, k, v: v.raw)
+        getter=lambda id, k, v: v.raw
+    )
 
     @staticmethod
     def to_ids(func):
@@ -605,10 +599,10 @@ class Country(Choices):
     african_union = _("African Union")
     arab_league = _("Arab League")
     association_of_southeast_asian_nations = \
-            _("Association of Southeast Asian Nations")
+        _("Association of Southeast Asian Nations")
     caricom = _("Caricom")
     commonwealth_of_independent_states = \
-            _("Commonwealth of Independent States")
+        _("Commonwealth of Independent States")
     commonwealth_of_nations = _("Commonwealth of Nations")
     european_union = _("European Union")
     islamic_conference = _("Islamic Conference")
@@ -852,24 +846,21 @@ class Language(Choices):
     zh_tw = _("Traditional Chinese")
     zu = _("Zulu")
 
-    from_name = _language_lookup_getter(overrides=Choices.from_name,
+    from_name = _language_lookup_getter(
+        overrides=Choices.from_name,
         getter=lambda choice: choice)
 
-    id_from_name = _language_lookup_getter(overrides=Choices.id_from_name,
+    id_from_name = _language_lookup_getter(
+        overrides=Choices.id_from_name,
         getter=lambda choice: choice.id)
 
-    desc_from_name = _language_lookup_getter(overrides=Choices.desc_from_name,
+    desc_from_name = _language_lookup_getter(
+        overrides=Choices.desc_from_name,
         getter=lambda choice: choice.desc)
 
-    raw_from_name = _language_lookup_getter(overrides=Choices.raw_from_name,
+    raw_from_name = _language_lookup_getter(
+        overrides=Choices.raw_from_name,
         getter=lambda choice: choice.raw)
-
-    # deprecated compatibility layer for code using lck.django.choices < 0.8
-    # to be removed at 1.0
-    FromName = from_name
-    IDFromName = id_from_name
-    DescFromName = desc_from_name
-    RawFromName = raw_from_name
 
 
 class Gender(Choices):
