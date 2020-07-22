@@ -23,10 +23,16 @@
 """Tests for choices."""
 
 
+import shutil
+from pathlib import Path
 from django.test import TestCase
 
 
 class SimpleTest(TestCase):
+    def tearDown(self) -> None:
+        lc_path = Path(__file__).parent / 'locale'
+        shutil.rmtree(lc_path, True)
+
     def test_dummy(self):
         """Just see if the import works as expected."""
 
@@ -329,3 +335,11 @@ class SimpleTest(TestCase):
         self.assertTrue('color' in invalid_type_form.errors)
         self.assertTrue('Select a valid choice' in
                         invalid_type_form.errors['color'][0])
+
+    def test_generate_po(self):
+        '''Test if gettext can extract strings for translation.'''
+        from django.core.management import execute_from_command_line
+        execute_from_command_line(['', 'makemessages', '-a', '--keep-pot'])
+        pot_path = Path(__file__).parent / 'locale' / 'django.pot'
+        self.assertTrue(pot_path.exists())
+        self.assertIn('msgid "Swimming"', pot_path.read_text())

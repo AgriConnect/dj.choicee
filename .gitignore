@@ -3,6 +3,7 @@
 /src/log/
 /dist/
 /src/dj.choices.egg-info/
+tests/locale
 *.pyc
 __pycache__
 .python-version
