@@ -6,7 +6,9 @@ dj.choices
   :target: https://travis-ci.org/ambv/dj.choices
 
 This is a much clearer way to specify choices for fields in models and forms.
-A basic example::
+A basic example:
+
+.. code-block:: python
 
     >>> from dj.choices import Choices
     >>> class Gender(Choices):
@@ -16,7 +18,7 @@ A basic example::
     ...   female = _("Female")
     ...
     >>> Gender()
-    [(1, u'Male'), (2, u'Female')]
+    [(1, 'Male'), (2, 'Female')]
     >>> Gender.male
     <Choice: male (id: 1)>
     >>> Gender.female
@@ -24,11 +26,11 @@ A basic example::
     >>> Gender.male.id
     1
     >>> Gender.male.desc
-    u'Male'
+    'Male'
     >>> Gender.male.raw
     'Male'
     >>> Gender.male.name
-    u'male'
+    'male'
     >>> Gender.from_name("male")
     <Choice: male (id: 1)>
     >>> Gender.id_from_name("male")
@@ -36,7 +38,7 @@ A basic example::
     >>> Gender.raw_from_name("male")
     'Male'
     >>> Gender.desc_from_name("male")
-    u'Male'
+    'Male'
     >>> Gender.name_from_id(2)
     'female'
     >>> Gender.name_from_id(3)
@@ -68,16 +70,18 @@ Those attributes are ``int`` subclasses, numbered automatically starting with
 ..  note::
     The ``_ = Choices.Choice`` trick makes it possible for ``django-admin.py
     makemessages`` to find each choice description and include it in ``.po``
-    files for localization.  It masks ugettext only in the scope of the class so
-    the rest of the module can safely use ugettext or ugettext_lazy.  Having to
+    files for localization.  It masks ``gettext`` only in the scope of the class so
+    the rest of the module can safely use ``gettext`` or ``gettext_lazy``.  Having to
     specify ``_`` each time is not a particularly pretty solution but it's
-    explicit.  Suggestions for a better approach are welcome.
+    explicit. Suggestions for a better approach are welcome.
 
 Grouping choices
 ----------------
 
 One of the worst problems with choices is their weak extensibility.  For
-instance, an application defines a group of possible choices like this::
+instance, an application defines a group of possible choices like this:
+
+.. code-block:: python
 
     >>> class License(Choices):
     ...   _ = Choices.Choice
@@ -87,14 +91,16 @@ instance, an application defines a group of possible choices like this::
     ...   proprietary = _("Proprietary")
     ...
     >>> License()
-    [(1, u'GPL'), (2, u'BSD'), (3, u'Proprietary')]
+    [(1, 'GPL'), (2, 'BSD'), (3, 'Proprietary')]
 
 All is well until the application goes live and after a while the developer
 wants to include LGPL.  The natural choice would be to add it after ``gpl`` but
 when we do that, the indexing would break.  On the other hand, adding the new
 entry at the end of the definition looks ugly and makes the resulting combo
 boxes in the UI sorted in a counter-intuitive way.  Grouping lets us solve this
-problem by explicitly defining the structure within a class of choices::
+problem by explicitly defining the structure within a class of choices:
+
+.. code-block:: python
 
     >>> class License(Choices):
     ...   _ = Choices.Choice
@@ -112,9 +118,11 @@ problem by explicitly defining the structure within a class of choices::
     ...   proprietary = _("Proprietary")
     ...
     >>> License()
-    [(1, u'GPL'), (101, u'BSD'), (201, u'Apache 2'), (301, u'Proprietary')]
+    [(1, 'GPL'), (101, 'BSD'), (201, 'Apache 2'), (301, 'Proprietary')]
 
-This enables the developer to include more licenses of each group later on::
+This enables the developer to include more licenses of each group later on:
+
+.. code-block:: python
 
     >>> class License(Choices):
     ...   _ = Choices.Choice
@@ -138,9 +146,9 @@ This enables the developer to include more licenses of each group later on::
     ...   proprietary = _("Proprietary")
     ...
     >>> License()
-    [(1, u'GPL, any'), (2, u'GPL 2'), (3, u'GPL 3'), (4, u'LGPL'),
-     (5, u'Affero GPL'), (101, u'BSD'), (102, u'Public domain'),
-     (201, u'Apache 2'), (202, u'MPL'), (301, u'Proprietary')]
+    [(1, 'GPL, any'), (2, 'GPL 2'), (3, 'GPL 3'), (4, 'LGPL'),
+     (5, 'Affero GPL'), (101, 'BSD'), (102, 'Public domain'),
+     (201, 'Apache 2'), (202, 'MPL'), (301, 'Proprietary')]
 
 Note the behaviour:
 
@@ -150,15 +158,17 @@ Note the behaviour:
 
  * the resulting class is self-descriptive, readable and extensible
 
-As a bonus, the explicitly specified groups can be used when needed::
+As a bonus, the explicitly specified groups can be used when needed:
+
+.. code-block:: python
 
     >>> License.COPYLEFT
     <ChoiceGroup: COPYLEFT (id: 0)>
     >>> License.gpl2 in License.COPYLEFT.choices
     True
     >>> [(c.id, c.desc) for c in License.COPYLEFT.choices]
-    [(1, u'GPL, any'), (2, u'GPL 2'), (3, u'GPL 3'), (4, u'LGPL'),
-     (5, u'Affero GPL')]
+    [(1, 'GPL, any'), (2, 'GPL 2'), (3, 'GPL 3'), (4, 'LGPL'),
+     (5, 'Affero GPL')]
 
 ``ChoiceField``
 ---------------
@@ -166,12 +176,16 @@ As a bonus, the explicitly specified groups can be used when needed::
 Choices can be used with generic ``IntegerField`` and ``CharField`` instances.
 When you do that though, some minor API deficiencies show up fairly quickly.
 First, when you define the field, you have to instanciate the choices class and
-the default value has to be converted to the proper type explicitly::
+the default value has to be converted to the proper type explicitly:
+
+.. code-block:: python
 
     color = models.IntegerField(choices=Color(), default=Color.green.id)
 
 Second, when getting the attribute back from a model, it has to be converted to
-a Choice instance to do anything interesting with it::
+a ``Choice`` instance to do anything interesting with it:
+
+.. code-block:: python
 
     >>> obj = Model.objects.get(pk=3)
     >>> obj.color
@@ -181,11 +195,15 @@ a Choice instance to do anything interesting with it::
 
 To overcome those problems a ``ChoiceField`` is available in the
 ``dj.choices.fields`` package.  It is based on integers on the database level but
-the API exposes ``Choice`` instances.  This helps both on the definition side::
+the API exposes ``Choice`` instances.  This helps both on the definition side:
+
+.. code-block:: python
 
     color = ChoiceField(choices=Color, default=Color.green)
 
-and on the access side::
+and on the access side:
+
+.. code-block:: python
 
     >>> obj = Model.objects.get(pk=3)
     >>> obj.color
@@ -205,7 +223,9 @@ Filtering
 ~~~~~~~~~
 
 The developer can specify all possible choices for future use and then filter
-out only the currently applicable values on choices creation::
+out only the currently applicable values on choices creation:
+
+.. code-block:: python
 
     >>> class Language(Choices):
     ...   _ = Choices.Choice
@@ -216,9 +236,9 @@ out only the currently applicable values on choices creation::
     ...   pl = _("Polish")
     ...
     >>> Language()
-    [(1, u'German'), (2, u'English'), (3, u'French'), (4, u'Polish')]
+    [(1, 'German'), (2, 'English'), (3, 'French'), (4, 'Polish')]
     >>> Language(filter=("en", "pl"))
-    [(2, u'English'), (4, u'Polish')]
+    [(2, 'English'), (4, 'Polish')]
 
 This has the great advantage of keeping the IDs and sorting intact.
 
@@ -227,16 +247,20 @@ Custom item format
 
 One can also change how the pairs are constructed by providing a factory
 function.  For instance, to use the class of choices defined above for the
-``LANGUAGES`` setting in ``settings.py``, one could specify::
+``LANGUAGES`` setting in ``settings.py``, one could specify:
+
+.. code-block:: python
 
     >>> Language(item=lambda choice: (choice.name, choice.raw))
-    [(u'de', 'German'), (u'en', 'English'), (u'fr', 'French'),
-     (u'pl', 'Polish')]
+    [('de', 'German'), ('en', 'English'), ('fr', 'French'),
+     ('pl', 'Polish')]
 
 Extra attributes on choices
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Each choice can receive extra arguments using the ``extra()`` method::
+Each choice can receive extra arguments using the ``extra()`` method:
+
+.. code-block:: python
 
     >>> class Python(Choices):
     ...   _ = Choices.Choice
@@ -247,19 +271,25 @@ Each choice can receive extra arguments using the ``extra()`` method::
     ...   iron_python = _("IronPython").extra(language='C#')
 
 This adds a ``language`` attribute to each choice so you can get it back like
-this::
+this:
+
+.. code-block:: python
 
     >>> Python.jython.language
     'Java'
 
 This enables polymorphic attribute access later on when using models or forms.
-For instance, suppose you have a simple model like::
+For instance, suppose you have a simple model like:
+
+.. code-block:: python
 
     >>> class Library(models.Model):
     ...   name = models.CharField(max_length=100)
     ...   python_kind = models.IntegerField(choices=Python(), default=Python.cpython.id)
 
-In that case to get the implementation language back you'd do::
+In that case to get the implementation language back yo'd do:
+
+.. code-block:: python
 
     >>> library = Library.objects.get(name='dj.choices')
     >>> Python.from_id(library.python_kind).language
@@ -276,7 +306,9 @@ Extra attributes on choice groups
 
 Unsurprisingly, choice groups can have extra attributes as well.  They are then
 inherited by choices in such a group and can be overriden if necessary.  For
-instance::
+instance:
+
+.. code-block:: python
 
   >>> class ProfileChange(Choices):
   ...   _ = Choices.Choice
@@ -299,7 +331,9 @@ instance::
   ...   xfire = _("X-Fire login")
   ...   irc = _("IRC info").extra(is_public=True)
 
-In that case proper inheritance takes place::
+In that case proper inheritance takes place:
+
+.. code-block:: python
 
   >>> ProfileChange.first_name.is_public
   True
@@ -320,12 +354,20 @@ so they are provided already: ``Country``, ``Gender`` and ``Language``.
 How do I run the tests?
 -----------------------
 
-The easiest way would be to run::
+Install `tox <https://pypi.org/project/tox/>`_ then run:
 
-  $ DJANGO_SETTINGS_MODULE="dj._choicestestproject.settings" django-admin.py test
+.. code-block:: sh
+
+  $ tox -e py
 
 Change Log
 ----------
+
+1.0.0
+~~~~~
+
+* Pure Python 3 (drop Python 2 compatibility).
+* Support only Python3.5+ and Django 2.0+
 
 0.11.0
 ~~~~~~
@@ -426,4 +468,4 @@ Authors
 -------
 
 Glued together by `Łukasz Langa <mailto:lukasz@langa.pl>`_. Python 2.6 support
-by `Carl van Tonder <carl@supervacuo.com>`_.
+by `Carl van Tonder <carl@supervacuo.com>`_. Dropping legacy Python 2 code by `Nguyễn Hồng Quân <ng.hong.quan@gmail.com>`_.

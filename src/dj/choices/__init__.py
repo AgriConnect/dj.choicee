@@ -36,7 +36,7 @@ class ChoicesEntry(int):
 
     def __new__(cls, *args, **kwargs):
         return super(ChoicesEntry, cls).__new__(
-            cls, kwargs[str('id')]
+            cls, kwargs['id']
         )
 
     def __init__(self, description, id, name=None):
