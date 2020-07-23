@@ -22,4 +22,4 @@
 
 """Choices - an enum implementation for Django forms and models."""
 
-from .core import Choices   # NOQA: F401
+from .core import Choices, Choice, ChoiceGroup   # NOQA: F401
