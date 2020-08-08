@@ -2,7 +2,7 @@
 /build/
 /src/log/
 /dist/
-/src/dj.choices.egg-info/
+/src/dj.choicee.egg-info/
 tests/locale
 *.pyc
 __pycache__

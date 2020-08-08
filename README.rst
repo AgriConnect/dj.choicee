@@ -1,16 +1,16 @@
 ==========
-dj.choices
+dj.choicee
 ==========
 
-.. image:: https://travis-ci.org/ambv/dj.choices.png
-  :target: https://travis-ci.org/ambv/dj.choices
+.. image:: https://travis-ci.org/ambv/dj.choicee.png
+  :target: https://travis-ci.org/ambv/dj.choicee
 
 This is a much clearer way to specify choices for fields in models and forms.
 A basic example:
 
 .. code-block:: python
 
-    >>> from dj.choices import Choices
+    >>> from dj.choicee import Choices
     >>> class Gender(Choices):
     ...   _ = Choices.Choice
     ...
@@ -194,7 +194,7 @@ a ``Choice`` instance to do anything interesting with it:
     <Choice: Blue (id: 3, name: blue)>
 
 To overcome those problems a ``ChoiceField`` is available in the
-``dj.choices.fields`` package.  It is based on integers on the database level but
+``dj.choicee.fields`` package.  It is based on integers on the database level but
 the API exposes ``Choice`` instances.  This helps both on the definition side:
 
 .. code-block:: python
@@ -291,7 +291,7 @@ In that case to get the implementation language back yo'd do:
 
 .. code-block:: python
 
-    >>> library = Library.objects.get(name='dj.choices')
+    >>> library = Library.objects.get(name='dj.choicee')
     >>> Python.from_id(library.python_kind).language
     'C'
 
@@ -368,104 +368,13 @@ Change Log
 
 * Pure Python 3 (drop Python 2 compatibility).
 * Support only Python3.5+ and Django 2.0+
-
-0.11.0
-~~~~~~
-
-* Drop compatibility for Django < 1.4 and Python 2.6
-
-* Add support for Django 1.9 and 1.10 (use ``from_db_value`` instead of ``SubfieldBase``)
-
-* Add support for Python 3.5
-
-0.10.0
-~~~~~~
-
-* Works and tests run on Django 1.6 and Django 1.7; now tested with
-  Python 3.4 as well
-
-0.9.2
-~~~~~
-
-* Python 2.6 is now supported as well thanks to Carl van Tonder
-
-0.9.1
-~~~~~
-
-* Long overdue Python 3 support (considered experimental)
-
-0.9.0
-~~~~~
-
-* Choices are now ``int`` subclasses so you can use a choice directly instead of
-  ``choice.id`` and ``int(choice)`` is always safe
-
-* ``unicode(choice)`` is now equivalent to ``choice.desc``
-
-* Fixed ``get_FIELD_display()`` on models with ``ChoiceFields``
-
-0.8.6
-~~~~~
-
-* Values outside of defined choices for a ``ChoiceField`` now correctly display
-  validation errors instead of throwing exceptions; fixes `issue #2
-  <https://github.com/ambv/dj.choices/issues/2>`_
-
-* ``ChoiceField`` can have ``default=None``
-
-* Fixed regression from 0.8.5 where ``__gt(e)`` and ``__lt(e)`` couldn't be used
-  on ``ChoiceField`` lookups
-
-* Minor refinements
-
-0.8.5
-~~~~~
-
-* ``ChoiceField`` is now correctly South-migrable
-
-* Models with ``ChoiceFields`` can now use ``__in``, ``__range`` and
-  ``__isnull`` lookups on them; fixes `issue #1
-  <https://github.com/ambv/dj.choices/issues/1>`_
-
-
-0.8.4
-~~~~~
-
-* proper ChoiceField support if the underlying ``IntegerField`` returns
-  a ``long`` instead of an ``int``
-
-* minor ``__unicode__`` corrections for byte strings
-
-0.8.3
-~~~~~
-
-* ``MANIFEST.in`` was previously missing which made the source distribution hard
-  to install
-
-0.8.2
-~~~~~
-
-* ``ChoiceField`` introduced
-
-* extra attribute injection API is now public and documented
-
-0.8.1
-~~~~~
-
-* old accessors temporarily restored for backward compatibility (undocumented
-  and to be removed in 1.0)
-
-* minor documentation fixes
-
-0.8.0
-~~~~~
-
-* code separated from ``lck.django``
-
-* PEP8-fied the accessor APIs
+* Fork from `dj.choices`_ to new project.
 
 Authors
 -------
 
-Glued together by `Łukasz Langa <mailto:lukasz@langa.pl>`_. Python 2.6 support
-by `Carl van Tonder <carl@supervacuo.com>`_. Dropping legacy Python 2 code by `Nguyễn Hồng Quân <ng.hong.quan@gmail.com>`_.
+- Original `dj.choices`_ author `Łukasz Langa <mailto:lukasz@langa.pl>`_.
+- Fork and drop legacy Python2 code: `Nguyễn Hồng Quân <ng.hong.quan@gmail.com>`_.
+
+
+.. _dj.choices: https://pypi.org/project/dj.choices/

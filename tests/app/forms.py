@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # Copyright (C) 2012-2013 by Łukasz Langa
+# Copyright (C) 2020 by Nguyễn Hồng Quân
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # Copyright (C) 2012-2013 by Łukasz Langa
+# Copyright (C) 2020 by Nguyễn Hồng Quân
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +38,7 @@ class SimpleTest(TestCase):
         """Just see if the import works as expected."""
 
     def test_choices_basic(self):
-        from dj.choices import Choices
+        from dj.choicee import Choices
 
         class Colors(Choices):
             _ = Choices.Choice
@@ -127,7 +128,7 @@ class SimpleTest(TestCase):
         self.assertEqual(Colors.raw_from_name("black"), Colors.black.raw)
 
     def test_choices_groups(self):
-        from dj.choices import Choices
+        from dj.choicee import Choices
 
         class Groupies(Choices):
             _ = Choices.Choice
@@ -169,7 +170,7 @@ class SimpleTest(TestCase):
                          [Groupies.entry7, Groupies.entry8, Groupies.entry9])
 
     def test_choices_validation(self):
-        from dj.choices import Choices
+        from dj.choicee import Choices
 
         class NoChoice(Choices):
             not_a_choice = "Not a Choice() object"
@@ -182,14 +183,14 @@ class SimpleTest(TestCase):
                              "Choices class declared with no actual choice fields.")
 
     def test_choices_filter(self):
-        from dj.choices.more import Country
+        from dj.choicee.more import Country
 
         self.assertEqual(len(Country()), 235)
         self.assertEqual(Country(filter=("pl", "gb", "de")),
                          [(73, 'Germany'), (153, 'Poland'), (202, 'United Kingdom')])
 
     def test_shifted_basic(self):
-        from dj.choices import Choices
+        from dj.choicee import Choices
 
         class InvitationStatus(Choices):
             _ = Choices.Choice
@@ -205,7 +206,7 @@ class SimpleTest(TestCase):
         self.assertEqual(InvitationStatus.accepted.first_letter, 'a')
 
     def test_shifted_group_inheritance(self):
-        from dj.choices import Choices
+        from dj.choicee import Choices
 
         class Colors(Choices):
             _ = Choices.Choice
