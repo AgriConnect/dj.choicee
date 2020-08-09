@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dj.choicee"
-version = "0.9.1"
+version = "0.9.2"
 description = "An enum implementation for Django field choices, supporting group"
 authors = ["Nguyễn Hồng Quân <ng.hong.quan@gmail.com>"]
 maintainers = [

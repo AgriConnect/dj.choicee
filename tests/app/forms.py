@@ -23,7 +23,7 @@
 
 from app.models import Favourites, RegularIntegers
 from django import forms
-from django.forms.forms import BoundField
+from django.forms.boundfield import BoundField
 
 
 class HasBoundValue(object):
