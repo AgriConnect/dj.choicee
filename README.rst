@@ -2,6 +2,8 @@
 dj.choicee
 ==========
 
+.. image:: https://badgen.net/pypi/v/dj.choicee
+   :target: https://pypi.org/project/dj.choicee
 .. image:: https://travis-ci.org/AgriConnect/dj.choicee.png
   :target: https://travis-ci.org/AgriConnect/dj.choicee
 
